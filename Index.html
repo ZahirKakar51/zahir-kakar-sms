@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahir Kakar School Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f6fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        .sidebar {
+            position: fixed;
+            width: 250px;
+            height: 100%;
+            background: #2c3e50;
+            color: white;
+            padding: 2rem 1rem;
+        }
+        .sidebar h2 {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 5px;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: #3498db;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        .section {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .section.active {
+            display: block;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #3498db;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+        .actions button {
+            margin-right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .card {
+            background: #ecf0f1;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Zahir Kakar SMS</h2>
+        <a href="#dashboard" class="active">Dashboard</a>
+        <a href="#students">Students</a>
+        <a href="#attendance">Attendance</a>
+        <a href="#grades">Grades</a>
+        <a href="#timetable">Timetable</a>
+        <a href="#staff">Staff</a>
+        <a href="#reports">Reports</a>
+    </div>
+
+    <div class="main-content">
+        <section id="dashboard" class="section active">
+            <h1>Dashboard</h1>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>Total Students</h3>
+                    <p id="total-students">0</p>
+                </div>
+                <div class="card">
+                    <h3>Present Today</h3>
+                    <p id="present-today">0</p>
+                </div>
+                <div class="card">
+                    <h3>Total Staff</h3>
+                    <p id="total-staff">0</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="students" class="section">
+            <h2>Student Management</h2>
+            <form id="student-form">
+                <div class="form-group">
+                    <input type="text" id="student-id" placeholder="Student ID" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="student-name" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="student-grade" placeholder="Grade (e.g., 9A)" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="student-contact" placeholder="Parent Contact" required>
+                </div>
+                <button type="submit">Add/Update Student</button>
+            </form>
+            <table id="student-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Grade</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="student-list"></tbody>
+            </table>
+        </section>
+
+        <section id="attendance" class="section">
+            <h2>Attendance</h2>
+            <form id="attendance-form">
+                <div class="form-group">
+                    <input type="text" id="attendance-id" placeholder="Student ID" required>
+                </div>
+                <div class="form-group">
+                    <select id="attendance-status" required>
+                        <option value="">Select Status</option>
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                    </select>
+                </div>
+                <button type="submit">Record Attendance</button>
+            </form>
+            <table id="attendance-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="attendance-list"></tbody>
+            </table>
+        </section>
+
+        <section id="grades" class="section">
+            <h2>Grades</h2>
+            <form id="grade-form">
+                <div class="form-group">
+                    <input type="text" id="grade-id" placeholder="Student ID" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="grade-subject" placeholder="Subject" required>
+                </div>
+                <div class="form-group">
+                    <input type="number" id="grade-score" placeholder="Score (0-100)" min="0" max="100" required>
+                </div>
+                <button type="submit">Add Grade</button>
+            </form>
+            <table id="grade-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Subject</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="grade-list"></tbody>
+            </table>
+        </section>
+
+        <section id="timetable" class="section">
+            <h2>Timetable</h2>
+            <table id="timetable-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                    </tr>
+                </thead>
+                <tbody id="timetable-list"></tbody>
+            </table>
+        </section>
+
+        <section id="staff" class="section">
+            <h2>Staff Management</h2>
+            <form id="staff-form">
+                <div class="form-group">
+                    <input type="text" id="staff-id" placeholder="Staff ID" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="staff-name" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="staff-role" placeholder="Role (e.g., Teacher)" required>
+                </div>
+                <button type="submit">Add/Update Staff</button>
+            </form>
+            <table id="staff-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="staff-list"></tbody>
+            </table>
+        </section>
+
+        <section id="reports" class="section">
+            <h2>Reports</h2>
+            <div id="report-content"></div>
+        </section>
+    </div>
+
+    <script>
+        // Data Storage
+        let students = JSON.parse(localStorage.getItem('students')) || [];
+        let attendance = JSON.parse(localStorage.getItem('attendance')) || [];
+        let grades = JSON.parse(localStorage.getItem('grades')) || [];
+        let staff = JSON.parse(localStorage.getItem('staff')) || [];
+        const timetable = [
+            { time: "8:00-9:00", mon: "Math", tue: "English", wed: "Science", thu: "History", fri: "PE" },
+            { time: "9:00-10:00", mon: "English", tue: "Science", wed: "Math", thu: "PE", fri: "Art" },
+            { time: "10:00-11:00", mon: "Science", tue: "Math", wed: "History", thu: "Art", fri: "English" }
+        ];
+
+        // DOM Elements
+        const studentForm = document.getElementById('student-form');
+        const studentList = document.getElementById('student-list');
+        const attendanceForm = document.getElementById('attendance-form');
+        const attendanceList = document.getElementById('attendance-list');
+        const gradeForm = document.getElementById('grade-form');
+        const gradeList = document.getElementById('grade-list');
+        const timetableList = document.getElementById('timetable-list');
+        const staffForm = document.getElementById('staff-form');
+        const staffList = document.getElementById('staff-list');
+        const reportContent = document.getElementById('report-content');
+
+        // Navigation
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.sidebar a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.querySelector(this.getAttribute('href')).classList.add('active');
+                if (this.getAttribute('href') === '#reports') updateReports();
+            });
+        });
+
+        // Student Management
+        studentForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const student = {
+                id: document.getElementById('student-id').value,
+                name: document.getElementById('student-name').value,
+                grade: document.getElementById('student-grade').value,
+                contact: document.getElementById('student-contact').value
+            };
+            const index = students.findIndex(s => s.id === student.id);
+            if (index !== -1) students[index] = student;
+            else students.push(student);
+            localStorage.setItem('students', JSON.stringify(students));
+            updateStudents();
+            updateDashboard();
+            studentForm.reset();
+        });
+
+        function updateStudents() {
+            studentList.innerHTML = '';
+            students.forEach(s => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${s.id}</td>
+                    <td>${s.name}</td>
+                    <td>${s.grade}</td>
+                    <td>${s.contact}</td>
+                    <td class="actions">
+                        <button onclick="deleteStudent('${s.id}')">Delete</button>
+                    </td>
+                `;
+                studentList.appendChild(row);
+            });
+        }
+
+        function deleteStudent(id) {
+            students = students.filter(s => s.id !== id);
+            localStorage.setItem('students', JSON.stringify(students));
+            updateStudents();
+            updateDashboard();
+        }
+
+        // Attendance
+        attendanceForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const id = document.getElementById('attendance-id').value;
+            const student = students.find(s => s.id === id);
+            if (!student) return alert('Student not found!');
+            const record = {
+                id, name: student.name,
+                status: document.getElementById('attendance-status').value,
+                date: new Date().toLocaleDateString()
+            };
+            attendance.push(record);
+            localStorage.setItem('attendance', JSON.stringify(attendance));
+            updateAttendance();
+            updateDashboard();
+            attendanceForm.reset();
+        });
+
+        function updateAttendance() {
+            attendanceList.innerHTML = '';
+            attendance.forEach(a => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${a.id}</td>
+                    <td>${a.name}</td>
+                    <td>${a.status}</td>
+                    <td>${a.date}</td>
+                `;
+                attendanceList.appendChild(row);
+            });
+        }
+
+        // Grades
+        gradeForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const id = document.getElementById('grade-id').value;
+            const student = students.find(s => s.id === id);
+            if (!student) return alert('Student not found!');
+            const grade = {
+                id, name: student.name,
+                subject: document.getElementById('grade-subject').value,
+                score: document.getElementById('grade-score').value
+            };
+            grades.push(grade);
+            localStorage.setItem('grades', JSON.stringify(grades));
+            updateGrades();
+            gradeForm.reset();
+        });
+
+        function updateGrades() {
+            gradeList.innerHTML = '';
+            grades.forEach(g => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${g.id}</td>
+                    <td>${g.name}</td>
+                    <td>${g.subject}</td>
+                    <td>${g.score}</td>
+                `;
+                gradeList.appendChild(row);
+            });
+        }
+
+        // Timetable
+        function updateTimetable() {
+            timetableList.innerHTML = '';
+            timetable.forEach(t => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${t.time}</td>
+                    <td>${t.mon}</td>
+                    <td>${t.tue}</td>
+                    <td>${t.wed}</td>
+                    <td>${t.thu}</td>
+                    <td>${t.fri}</td>
+                `;
+                timetableList.appendChild(row);
+            });
+        }
+
+        // Staff Management
+        staffForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const staffMember = {
+                id: document.getElementById('staff-id').value,
+                name: document.getElementById('staff-name').value,
+                role: document.getElementById('staff-role').value
+            };
+            const index = staff.findIndex(s => s.id === staffMember.id);
+            if (index !== -1) staff[index] = staffMember;
+            else staff.push(staffMember);
+            localStorage.setItem('staff', JSON.stringify(staff));
+            updateStaff();
+            updateDashboard();
+            staffForm.reset();
+        });
+
+        function updateStaff() {
+            staffList.innerHTML = '';
+            staff.forEach(s => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${s.id}</td>
+                    <td>${s.name}</td>
+                    <td>${s.role}</td>
+                    <td class="actions">
+                        <button onclick="deleteStaff('${s.id}')">Delete</button>
+                    </td>
+                `;
+                staffList.appendChild(row);
+            });
+        }
+
+        function deleteStaff(id) {
+            staff = staff.filter(s => s.id !== id);
+            localStorage.setItem('staff', JSON.stringify(staff));
+            updateStaff();
+            updateDashboard();
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            document.getElementById('total-students').textContent = students.length;
+            const today = new Date().toLocaleDateString();
+            document.getElementById('present-today').textContent = 
+                attendance.filter(a => a.date === today && a.status === 'Present').length;
+            document.getElementById('total-staff').textContent = staff.length;
+        }
+
+        // Reports
+        function updateReports() {
+            const avgGrades = grades.reduce((acc, g) => {
+                acc[g.id] = acc[g.id] || { sum: 0, count: 0 };
+                acc[g.id].sum += parseInt(g.score);
+                acc[g.id].count++;
+                return acc;
+            }, {});
+            let reportHTML = '<h3>Student Performance</h3><ul>';
+            for (let id in avgGrades) {
+                const avg = avgGrades[id].sum / avgGrades[id].count;
+                const student = students.find(s => s.id === id);
+                reportHTML += `<li>${student?.name || id}: Avg Grade - ${avg.toFixed(2)}</li>`;
+            }
+            reportHTML += '</ul>';
+            reportContent.innerHTML = reportHTML;
+        }
+
+        // Initial Load
+        updateStudents();
+        updateAttendance();
+        updateGrades();
+        updateTimetable();
+        updateStaff();
+        updateDashboard();
+    </script>
+</body>
+                  </html>
